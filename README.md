@@ -32,16 +32,43 @@ npm run preview  # 预览构建结果
 | `/#/success` | 回递成功 |
 | `/#/my` | 我的名片 |
 | `/#/share` | 复制带 scene 的链接，二维码为占位 |
-| `/#/admin` | 主人：概览、资料、视频库、访客雷达、评论 |
-| `/#/platform` | 平台：总览、用户套餐、模板、内容审核、推荐树 |
+| `/#/poster` | 海报：头像字、姓名、公司、二维码占位，下载图片并复制朋友圈文案 |
+| `/#/site` | 微官网：产品、案例、动态、语音介绍、公众号和视频号链接 |
+| `/#/admin` | 概览和每晚日报 |
+| `/#/admin/profile` | 编辑资料 |
+| `/#/admin/library` | 视频库 |
+| `/#/admin/radar` | 访客时间线、来源标签、意向分 |
+| `/#/admin/notices` | 通知中心，微信订阅消息为开关桩 |
+| `/#/admin/comments` | 评论审核 |
+| `/#/admin/qrcode` | 获客活码：微信号和二维码 |
+| `/#/admin/inbox` | 在线接待收件箱 |
+| `/#/admin/rewards` | 扫码领红包（演示，不到账）和邀请榜 |
+| `/#/admin/team` | 团队名片和团队数据 |
+| `/#/admin/crm` | 客户、跟进、提醒；名片识别标为演示 |
+| `/#/admin/company` | 工商简介，实名和企业认证标记 |
+| `/#/admin/reports` | 今晚日报和本周周报 |
+| `/#/admin/site` | 编辑微官网内容 |
+| `/#/admin/identities` | 多张名片，切换正在管理的身份 |
+| `/#/admin/imports` | 粘贴腾讯会议、抖音、快手、视频号、B 站链接，抓取标为待接入 |
+| `/#/platform` | 平台总览 |
+| `/#/platform/users` | 用户与套餐 |
+| `/#/platform/templates` | 名片模板 |
+| `/#/platform/audit` | 内容审核 |
+| `/#/platform/referrals` | 推荐关系 |
+| `/#/platform/modules` | 开关：积分、分佣、拼团、直播、门店 |
+| `/#/platform/points` | 积分流水 |
+| `/#/platform/commission` | 分佣记录（不打款） |
+| `/#/platform/group-buy` | 拼团演示 |
+| `/#/platform/live` | 直播入口 |
+| `/#/platform/stores` | 门店列表 |
 
-右上角「···」可进名片管理和平台后台。
+右上角「···」可进名片管理和平台后台。访客名片上还有微官网、加微信、在线咨询、海报和领红包。
 
 ## 数据
 
-页面只调用 `src/services/api.js`。默认把 users、cards、tabs、videos、visits、visit_events、referral_edges、comments 存在 `localStorage` 键 `super-card-db-v1`，刷新还在。`signMediaUrl` 只生成演示签名，不拦截播放。
+页面只调用 `src/services/api.js`。默认把名片、访问、通知、咨询、客户、团队、微官网和可选模块存在 `localStorage` 键 `super-card-db-v1`，刷新还在。`signMediaUrl` 只生成演示签名，不拦截播放。
 
-GitHub Pages 不能跑数据库。若要换真实接口，设置 `VITE_API_BASE` 并把 `api.js` 里的函数改成对应的 `fetch`，页面路由不用改。没有商城、支付或预约。
+GitHub Pages 不能跑数据库。若要换真实接口，设置 `VITE_API_BASE` 并把 `api.js` 里的函数改成对应的 `fetch`，页面路由不用改。红包、拼团、积分和分佣都是演示数字，没有真实支付。
 
 ## 部署（GitHub Pages）
 

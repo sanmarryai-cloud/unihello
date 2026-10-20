@@ -11,6 +11,12 @@
       <router-link to="/platform/templates">模板</router-link>
       <router-link to="/platform/audit">审核</router-link>
       <router-link to="/platform/referrals">关系</router-link>
+      <router-link to="/platform/modules">模块</router-link>
+      <router-link to="/platform/points">积分</router-link>
+      <router-link to="/platform/commission">分佣</router-link>
+      <router-link to="/platform/group-buy">拼团</router-link>
+      <router-link to="/platform/live">直播</router-link>
+      <router-link to="/platform/stores">门店</router-link>
     </nav>
     <router-view />
   </div>

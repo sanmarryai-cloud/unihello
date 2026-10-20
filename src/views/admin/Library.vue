@@ -49,6 +49,7 @@
 import { computed, ref, watch } from 'vue'
 import { SAMPLE_MP4, rememberPreview } from '../../services/media.js'
 import {
+  adminCardId,
   createTab,
   createVideo,
   dbState,
@@ -60,6 +61,10 @@ import {
   TYPE_LABEL as typeLabel,
 } from '../../services/api.js'
 
+const cardId = computed(() => {
+  dbState.meta && dbState.meta.adminCardId
+  return adminCardId()
+})
 const tabName = ref('')
 const rename = ref('')
 const activeId = ref('')
@@ -69,7 +74,7 @@ const message = ref('')
 
 const tabs = computed(() => {
   dbState.tabs.length
-  return listTabs('card_main')
+  return listTabs(cardId.value)
 })
 const active = computed(() => tabs.value.find((tab) => tab.id === activeId.value) || null)
 const videos = computed(() => {
@@ -97,7 +102,7 @@ function auditText(status) {
 
 function addTab() {
   if (!tabName.value.trim()) return
-  const tab = createTab('card_main', tabName.value.trim())
+  const tab = createTab(cardId.value, tabName.value.trim())
   tabName.value = ''
   activeId.value = tab.id
 }
@@ -146,7 +151,7 @@ async function saveUpload() {
       note = '保存在本机'
     } else {
       note = '文件较大，刷新后改播示例片'
-      const video = createVideo('card_main', active.value.id, {
+      const video = createVideo(cardId.value, active.value.id, {
         title: title.value.trim(),
         src: SAMPLE_MP4,
         size,
@@ -160,7 +165,7 @@ async function saveUpload() {
       return
     }
   }
-  createVideo('card_main', active.value.id, {
+  createVideo(cardId.value, active.value.id, {
     title: title.value.trim(),
     src,
     size,
@@ -177,7 +182,7 @@ function saveSample() {
     message.value = '请先写标题'
     return
   }
-  createVideo('card_main', active.value.id, {
+  createVideo(cardId.value, active.value.id, {
     title: title.value.trim(),
     src: SAMPLE_MP4,
     size: '示例 mp4',
@@ -189,7 +194,7 @@ function saveSample() {
 
 function saveLive() {
   if (!active.value) return
-  createVideo('card_main', active.value.id, {
+  createVideo(cardId.value, active.value.id, {
     title: title.value.trim() || '直播流占位（演示）',
     src: 'https://example.com/live/demo.m3u8',
     size: 'm3u8',

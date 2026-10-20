@@ -148,8 +148,8 @@ img {
 }
 .subnav {
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
-  overflow-x: auto;
   background: #fff;
   padding: 8px 10px 10px;
   position: sticky;

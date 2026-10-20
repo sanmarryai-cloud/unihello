@@ -53,7 +53,42 @@ export function createSeed() {
       parentCardId: '',
       scene: 'home',
       templateId: 'navy',
+      wechatId: 'supercard-demo',
+      wechatQr: '',
+      verifiedPerson: true,
+      verifiedCompany: true,
+      legalName: '超级名片科技',
+      creditCode: '91430000DEMO00000X',
+      address: '演示城市演示路 1 号',
+      scope: '数字名片与客户连接的演示业务',
+      founded: '2024-01',
       createdAt: now - 48 * hour,
+    },
+    {
+      id: 'card_event',
+      ownerId: 'user_owner',
+      name: '超级名片演示',
+      phone: '13800000000',
+      company: '超级名片科技',
+      city: '演示城市',
+      detail: '会务身份，用于切换名片演示。',
+      banner:
+        'https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800&q=80',
+      avatar: users[0].avatar,
+      likeCount: 0,
+      parentCardId: '',
+      scene: 'event',
+      templateId: 'poster',
+      wechatId: 'supercard-demo',
+      wechatQr: '',
+      verifiedPerson: true,
+      verifiedCompany: false,
+      legalName: '超级名片科技',
+      creditCode: '',
+      address: '',
+      scope: '',
+      founded: '',
+      createdAt: now - 2 * hour,
     },
     {
       id: 'card_lin',
@@ -116,6 +151,7 @@ export function createSeed() {
     { id: 'tab_lin', cardId: 'card_lin', name: '获客', sort: 0 },
     { id: 'tab_zhou', cardId: 'card_zhou', name: '获客', sort: 0 },
     { id: 'tab_chen', cardId: 'card_chen', name: '获客', sort: 0 },
+    { id: 'tab_event', cardId: 'card_event', name: '会务', sort: 0 },
   ]
 
   const videos = [
@@ -222,7 +258,8 @@ export function createSeed() {
       id: 'visit_lin',
       cardId: 'card_main',
       visitorId: 'user_lin',
-      scene: 'home',
+      scene: 'chat',
+      source: '单聊',
       fromCardId: 'card_main',
       openedAt: now - 20 * hour,
       lastSeenAt: now - 19 * hour,
@@ -232,6 +269,7 @@ export function createSeed() {
       cardId: 'card_main',
       visitorId: 'user_chen',
       scene: 'booth',
+      source: '扫码',
       fromCardId: 'card_main',
       openedAt: now - 3 * hour,
       lastSeenAt: now - 3 * hour,
@@ -240,7 +278,8 @@ export function createSeed() {
       id: 'visit_zhou',
       cardId: 'card_lin',
       visitorId: 'user_zhou',
-      scene: 'home',
+      scene: 'group',
+      source: '群聊',
       fromCardId: 'card_lin',
       openedAt: now - 6 * hour,
       lastSeenAt: now - 6 * hour,
@@ -313,8 +352,116 @@ export function createSeed() {
     },
   ]
 
+  const notices = [
+    {
+      id: 'ntc1',
+      cardId: 'card_main',
+      type: 'open',
+      title: '有人打开了名片',
+      body: '林晓 · 单聊',
+      at: now - 20 * hour,
+      read: false,
+    },
+    {
+      id: 'ntc2',
+      cardId: 'card_main',
+      type: 'return_card',
+      title: '有人回递了名片',
+      body: '陈可 · 扫码',
+      at: now - 3 * hour,
+      read: false,
+    },
+  ]
+
+  const threads = [
+    { id: 'th1', cardId: 'card_main', visitorId: 'user_lin', at: now - 5 * hour },
+  ]
+  const messages = [
+    { id: 'msg1', threadId: 'th1', from: 'owner', text: '你好，我是超级名片的在线接待。不必加好友，直接留言即可。', at: now - 5 * hour },
+    { id: 'msg2', threadId: 'th1', from: 'visitor', text: '价格怎么算？', at: now - 5 * hour + 60000 },
+    { id: 'msg3', threadId: 'th1', from: 'bot', text: '演示报价：专业版只是套餐示意，不会真实扣款。', at: now - 5 * hour + 70000 },
+  ]
+
+  const campaigns = [
+    {
+      id: 'camp1',
+      cardId: 'card_main',
+      title: '扫码领红包',
+      reward: '8.8 元红包（演示，不到账）',
+      rule: '留下手机或回递名片即可上榜',
+      enabled: true,
+    },
+  ]
+  const claims = [
+    { id: 'claim1', campaignId: 'camp1', userId: 'user_lin', name: '林晓', at: now - 18 * hour },
+  ]
+
+  const teams = [
+    {
+      id: 'team1',
+      name: '超级名片演示团队',
+      ownerId: 'user_owner',
+      templateId: 'navy',
+      slogan: '统一模板和资料，成员各自发名片',
+    },
+  ]
+  const teamMembers = [
+    { id: 'tm1', teamId: 'team1', userId: 'user_owner', cardId: 'card_main', name: '超级名片演示' },
+    { id: 'tm2', teamId: 'team1', userId: 'user_owner', cardId: 'card_event', name: '会务身份' },
+  ]
+
+  const contacts = [
+    {
+      id: 'crm1',
+      ownerId: 'user_owner',
+      cardId: 'card_main',
+      name: '林晓',
+      phone: '13700000001',
+      group: '意向',
+      ocrNote: '',
+      notes: [{ id: 'note1', text: '从单聊来，看过介绍视频。', at: now - 10 * hour }],
+      follows: [{ id: 'fu1', text: '约明天再发资料', at: now - 9 * hour, remindAt: now + 20 * hour }],
+    },
+  ]
+
+  const posts = [
+    { id: 'post1', cardId: 'card_main', text: '今天把演示名片更新了一版，欢迎转给同事。', image: '', at: now - 8 * hour },
+  ]
+  const products = [
+    { id: 'prod1', cardId: 'card_main', title: '超级名片专业版（演示）', cover: 'linear-gradient(135deg,#1a3a6b,#4a7fd4)', priceText: '价格待定' },
+  ]
+  const cases = [
+    { id: 'case1', cardId: 'card_main', title: '展台获客案例（演示）', summary: '扫码后留下手机，第二天回访。', cover: 'linear-gradient(135deg,#0d4f3c,#2d9b6f)' },
+  ]
+  const embeds = [
+    { id: 'emb1', cardId: 'card_main', kind: '公众号', title: '超级名片', url: 'https://mp.weixin.qq.com/' },
+    { id: 'emb2', cardId: 'card_main', kind: '视频号', title: '超级名片演示', url: '' },
+  ]
+  const voice = {
+    card_main: { title: '你好，我是超级名片演示', autoplay: false },
+  }
+
+  const imports = [
+    { id: 'imp1', cardId: 'card_main', platform: '视频号', title: '演示视频', url: 'https://channels.weixin.qq.com/', status: '待接入' },
+  ]
+
+  const points = [
+    { id: 'pt1', userId: 'user_lin', name: '林晓', delta: 20, reason: '回递名片', at: now - 18 * hour },
+  ]
+  const groupBuys = [
+    { id: 'gb1', title: '演示拼团', need: 3, joined: 1, priceText: '¥99（演示，不支付）', enabled: true },
+  ]
+  const liveLinks = [
+    { id: 'live1', title: '超级名片公开课', url: 'https://example.com/live/demo', enabled: true },
+  ]
+  const stores = [
+    { id: 'store1', name: '演示城市旗舰店', address: '演示路 1 号', phone: '13800000000' },
+  ]
+
   return {
-    version: 1,
+    version: 2,
+    meta: { adminCardId: 'card_main', subscribe: false },
+    modules: { points: true, commission: true, groupBuy: true, live: true, stores: true },
     users,
     cards,
     tabs,
@@ -323,5 +470,23 @@ export function createSeed() {
     visit_events,
     referral_edges,
     comments,
+    notices,
+    threads,
+    messages,
+    campaigns,
+    claims,
+    teams,
+    teamMembers,
+    contacts,
+    posts,
+    products,
+    cases,
+    embeds,
+    voice,
+    imports,
+    points,
+    groupBuys,
+    liveLinks,
+    stores,
   }
 }

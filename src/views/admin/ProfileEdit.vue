@@ -11,25 +11,35 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
-import { getCard, updateCard } from '../../services/api.js'
+import { computed, ref, watch } from 'vue'
+import { adminCardId, dbState, getCard, updateCard } from '../../services/api.js'
 
 const form = ref(null)
 const saved = ref(false)
-
-onMounted(() => {
-  const card = getCard('card_main')
-  form.value = {
-    name: card.name,
-    phone: card.phone,
-    company: card.company,
-    city: card.city,
-    detail: card.detail,
-  }
+const cardId = computed(() => {
+  dbState.meta && dbState.meta.adminCardId
+  return adminCardId()
 })
 
+watch(
+  cardId,
+  (id) => {
+    const card = getCard(id)
+    if (!card) return
+    form.value = {
+      name: card.name,
+      phone: card.phone,
+      company: card.company,
+      city: card.city,
+      detail: card.detail,
+    }
+    saved.value = false
+  },
+  { immediate: true },
+)
+
 function save() {
-  updateCard('card_main', form.value)
+  updateCard(cardId.value, form.value)
   saved.value = true
 }
 </script>

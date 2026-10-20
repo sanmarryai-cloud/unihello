@@ -28,11 +28,20 @@
         </div>
         <div class="profile-meta">
           <span class="company">{{ card.company || '未填写公司' }}</span>
+          <span v-if="card.verifiedPerson" class="badge">实名</span>
+          <span v-if="card.verifiedCompany" class="badge firm">企业认证</span>
           <button class="detail-btn" type="button" @click="showCompany = !showCompany">
             详情 {{ showCompany ? '▲' : '▼' }}
           </button>
         </div>
-        <p v-if="showCompany" class="company-extra">{{ card.detail || '演示名片，公司与资料均为虚构。' }}</p>
+        <div v-if="showCompany" class="company-extra">
+          <p>{{ card.detail || '演示名片，公司与资料均为虚构。' }}</p>
+          <p v-if="card.legalName">工商名称 {{ card.legalName }}</p>
+          <p v-if="card.creditCode">统一社会信用代码 {{ card.creditCode }}</p>
+          <p v-if="card.address">住所 {{ card.address }}</p>
+          <p v-if="card.scope">经营范围 {{ card.scope }}</p>
+          <p v-if="card.founded">成立 {{ card.founded }}</p>
+        </div>
         <div class="city"><span class="pin">📍</span> {{ card.city || '未设置城市' }}</div>
       </div>
 
@@ -47,6 +56,8 @@
           <span class="ico">{{ liked ? '❤️' : '🤍' }}</span> 点赞
         </button>
       </div>
+
+      <VisitorExtras :card="card" />
 
       <div class="comment-preview" @click="commentOpen = true">
         <template v-if="preview">
@@ -154,6 +165,7 @@ import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import PlayerDialog from '../components/PlayerDialog.vue'
 import SharePanel from '../components/SharePanel.vue'
+import VisitorExtras from '../components/VisitorExtras.vue'
 import {
   addComment,
   addEvent,
@@ -397,10 +409,20 @@ function openShare() {
   font-weight: 500;
   margin-top: 4px;
 }
-.profile-meta { display: flex; align-items: center; margin-top: 12px; gap: 8px; }
+.profile-meta { display: flex; align-items: center; flex-wrap: wrap; margin-top: 12px; gap: 8px; }
 .company { font-size: 13px; color: #555; }
-.detail-btn { font-size: 12px; color: var(--navy); background: #f0f4fa; border-radius: 10px; padding: 2px 8px; }
+.badge {
+  flex-shrink: 0;
+  font-size: 10px;
+  color: #0d4f3c;
+  background: #e5f6ee;
+  border-radius: 8px;
+  padding: 2px 6px;
+}
+.badge.firm { color: #1a3a6b; background: #e8eef8; }
+.detail-btn { font-size: 12px; color: var(--navy); background: #f0f4fa; border-radius: 10px; padding: 2px 8px; margin-left: auto; }
 .company-extra { margin-top: 8px; font-size: 12px; color: #888; line-height: 1.5; }
+.company-extra p + p { margin-top: 4px; }
 .city { margin-top: 10px; font-size: 13px; color: #666; }
 .pin { font-size: 12px; }
 .social-row { display: flex; align-items: center; gap: 8px; padding: 12px 12px 0; }

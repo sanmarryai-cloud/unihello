@@ -1,6 +1,6 @@
 <template>
   <section class="pad">
-    <p class="note">选中后写到主名片。访客页会换成对应样式，仍然是同一套内容。</p>
+    <p class="note">选中后写到当前正在管理的名片。访客页会换成对应样式，内容仍是这一张名片自己的。</p>
     <button
       v-for="item in templates"
       :key="item.id"
@@ -17,15 +17,16 @@
 
 <script setup>
 import { computed } from 'vue'
-import { dbState, getCard, TEMPLATES as templates, updateCard } from '../../services/api.js'
+import { adminCardId, dbState, getCard, TEMPLATES as templates, updateCard } from '../../services/api.js'
 
 const card = computed(() => {
   dbState.cards.length
-  return getCard('card_main')
+  dbState.meta && dbState.meta.adminCardId
+  return getCard(adminCardId())
 })
 
 function pick(id) {
-  updateCard('card_main', { templateId: id })
+  updateCard(adminCardId(), { templateId: id })
 }
 </script>
 

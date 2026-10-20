@@ -16,11 +16,12 @@
 
 <script setup>
 import { computed } from 'vue'
-import { allComments, dbState, setCommentStatus } from '../../services/api.js'
+import { adminCardId, allComments, dbState, setCommentStatus } from '../../services/api.js'
 
 const comments = computed(() => {
   dbState.comments.length
-  return allComments('card_main')
+  dbState.meta && dbState.meta.adminCardId
+  return allComments(adminCardId())
 })
 
 function toggle(comment) {

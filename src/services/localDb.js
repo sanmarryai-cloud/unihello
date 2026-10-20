@@ -6,13 +6,59 @@ const VISITOR_KEY = 'super-card-visitor'
 
 export const store = reactive(load())
 
+const CARD_DEFAULTS = {
+  wechatId: '',
+  wechatQr: '',
+  verifiedPerson: false,
+  verifiedCompany: false,
+  legalName: '',
+  creditCode: '',
+  address: '',
+  scope: '',
+  founded: '',
+}
+
+export function sourceFromScene(scene) {
+  const value = String(scene || '')
+  if (/scan|qr|booth|code|event/i.test(value)) return '扫码'
+  if (/group/i.test(value)) return '群聊'
+  if (/moment|pengyou|share/i.test(value)) return '朋友圈'
+  if (/search|direct/i.test(value)) return '搜索'
+  return '单聊'
+}
+
+function hydrate(data) {
+  const seed = createSeed()
+  const lists = [
+    'notices', 'threads', 'messages', 'campaigns', 'claims', 'teams', 'teamMembers',
+    'contacts', 'posts', 'products', 'cases', 'embeds', 'imports', 'points',
+    'groupBuys', 'liveLinks', 'stores',
+  ]
+  for (const key of lists) {
+    if (!Array.isArray(data[key])) data[key] = seed[key]
+  }
+  if (!data.voice || typeof data.voice !== 'object') data.voice = seed.voice
+  if (!data.modules) data.modules = { ...seed.modules }
+  if (!data.meta) data.meta = { ...seed.meta }
+  for (const card of data.cards) {
+    for (const [key, value] of Object.entries(CARD_DEFAULTS)) {
+      if (card[key] === undefined) card[key] = value
+    }
+  }
+  for (const visit of data.visits || []) {
+    if (!visit.source) visit.source = sourceFromScene(visit.scene)
+  }
+  data.version = 2
+  return data
+}
+
 function load() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) return createSeed()
     const data = JSON.parse(raw)
-    if (!data || data.version !== 1 || !Array.isArray(data.cards)) return createSeed()
-    return data
+    if (!data || !Array.isArray(data.cards) || (data.version !== 1 && data.version !== 2)) return createSeed()
+    return hydrate(data)
   } catch {
     return createSeed()
   }
@@ -32,6 +78,20 @@ export function resetDemo() {
 
 export function uid(prefix) {
   return `${prefix}_${Math.random().toString(36).slice(2, 8)}${Date.now().toString(36).slice(-3)}`
+}
+
+export function adminCardId() {
+  const id = store.meta?.adminCardId
+  if (id && getCard(id)) return id
+  return 'card_main'
+}
+
+export function setAdminCard(id) {
+  if (!getCard(id)) return null
+  if (!store.meta) store.meta = {}
+  store.meta.adminCardId = id
+  persist()
+  return id
 }
 
 export function currentVisitorId() {
@@ -102,7 +162,11 @@ function ensureVisit(cardId, extra = {}) {
 
 export function addEvent(cardId, partial = {}) {
   const visit = ensureVisit(cardId, partial)
-  if (partial.scene) visit.scene = partial.scene
+  if (partial.scene) {
+    visit.scene = partial.scene
+    visit.source = sourceFromScene(partial.scene)
+  }
+  if (!visit.source) visit.source = sourceFromScene(visit.scene)
   if (partial.from) visit.fromCardId = partial.from
   visit.lastSeenAt = Date.now()
   const event = {
@@ -116,6 +180,24 @@ export function addEvent(cardId, partial = {}) {
     at: Date.now(),
   }
   store.visit_events.push(event)
+  const titles = {
+    open: '有人打开了名片',
+    contact_click: '有人点击了联系',
+    return_card: '有人回递了名片',
+  }
+  if (titles[event.type]) {
+    const who = store.users.find((item) => item.id === event.visitorId)
+    if (!Array.isArray(store.notices)) store.notices = []
+    store.notices.push({
+      id: uid('ntc'),
+      cardId,
+      type: event.type,
+      title: titles[event.type],
+      body: `${who?.name || '访客'} · ${visit.source || '单聊'}`,
+      at: event.at,
+      read: false,
+    })
+  }
   persist()
   return event
 }
