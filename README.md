@@ -45,7 +45,7 @@ npm run preview  # 预览构建结果
 
 **Pages 来源必须是 GitHub Actions**（`build_type: workflow`），不要用 “Deploy from a branch”。分支发布会把未经构建的源码盖到站点上，手机打开后脚本无法运行。
 
-仓库 Settings → Pages → Build and deployment → Source 选 **GitHub Actions**。工作流里会用 `GITHUB_TOKEN` 尝试调用 Pages API 切换；若 token 没有 `pages: write` / `administration: write`，需要在网页上手动改一次。改完之后，只有 Actions 会更新站点。
+仓库 Settings → Pages → Build and deployment → Source 选 **GitHub Actions**。当前安装 token 没有 `pages: write` 或 `administration: write`，Pages API 返回 403，这项设置没法用 API 改掉，需要在网页上手动改一次。改之前，每次 push 还会触发 “Deploy from a branch”，可能用未经构建的源码盖住 Actions 发布的 `dist/`。改成 GitHub Actions 之后，只有本工作流会更新站点。
 
 ## 目录结构
 
