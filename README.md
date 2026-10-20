@@ -26,16 +26,22 @@ npm run preview  # 预览构建结果
 
 | 路径 | 说明 |
 |------|------|
-| `/#/` | 名片主页：封面、资料卡、点赞评论、分类 Tab、资源列表、底部「立即回递」 |
-| `/#/auth` | 模拟微信授权（昵称 + 头像占位） |
-| `/#/success` | 回递成功 → 创建「我的名片」 |
-| `/#/my` | 我的名片占位页 |
+| `/#/` | 访客名片。可用 `?card=&scene=&from=` 指定名片和推荐场景 |
+| `/#/auth` | 模拟授权（昵称、头像） |
+| `/#/fill` | 填写姓名和手机，生成自己的名片并绑定上级 |
+| `/#/success` | 回递成功 |
+| `/#/my` | 我的名片 |
+| `/#/share` | 复制带 scene 的链接，二维码为占位 |
+| `/#/admin` | 主人：概览、资料、视频库、访客雷达、评论 |
+| `/#/platform` | 平台：总览、用户套餐、模板、内容审核、推荐树 |
 
-## 交互说明
+右上角「···」可进名片管理和平台后台。
 
-1. 主页切换 Tab（获客 / 项目介绍 / 产品介绍 / 私域课程 / 睡眠 / 高血压）查看不同资源列表（视频 / 图文 / 音频 Mock）。
-2. 点击 **立即回递** → 授权页选头像、填昵称 → **同意授权并回递名片** → 成功页 → **打开我的名片**。
-3. 资料存于 `localStorage`（键 `super-card-profile`），刷新后仍可进入「我的名片」。
+## 数据
+
+页面只调用 `src/services/api.js`。默认把 users、cards、tabs、videos、visits、visit_events、referral_edges、comments 存在 `localStorage` 键 `super-card-db-v1`，刷新还在。`signMediaUrl` 只生成演示签名，不拦截播放。
+
+GitHub Pages 不能跑数据库。若要换真实接口，设置 `VITE_API_BASE` 并把 `api.js` 里的函数改成对应的 `fetch`，页面路由不用改。没有商城、支付或预约。
 
 ## 部署（GitHub Pages）
 
@@ -52,21 +58,14 @@ npm run preview  # 预览构建结果
 ## 目录结构
 
 ```
-├── public/
 ├── src/
-│   ├── data/mock.js      # 名片与资源 Mock
-│   ├── router/index.js   # hash 路由
-│   ├── views/
-│   │   ├── Home.vue      # 名片主页
-│   │   ├── Auth.vue      # 授权
-│   │   ├── Success.vue   # 成功
-│   │   └── MyCard.vue    # 我的名片
-│   ├── App.vue
-│   ├── main.js
-│   └── style.css
-├── index.html
-├── package.json
-└── vite.config.js        # base: './'
+│   ├── data/seed.js          # 初始演示数据
+│   ├── services/api.js       # 页面用的数据入口
+│   ├── services/localDb.js   # localStorage 实现
+│   ├── services/media.js     # 示例片源与签名桩
+│   ├── views/admin/          # 名片主人
+│   └── views/platform/       # 平台
+└── vite.config.js            # base: './'
 ```
 
 ## 说明

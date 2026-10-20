@@ -52,8 +52,9 @@
 
 <script setup>
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
+const route = useRoute()
 const router = useRouter()
 const avatars = [
   'https://api.dicebear.com/7.x/avataaars/svg?seed=me1&backgroundColor=b6e3f4',
@@ -68,16 +69,14 @@ const loading = ref(false)
 function agree() {
   if (!nickname.value.trim()) return
   loading.value = true
-  const profile = {
-    nickname: nickname.value.trim(),
-    avatar: avatar.value,
-    createdAt: Date.now(),
-  }
-  localStorage.setItem('super-card-profile', JSON.stringify(profile))
+  sessionStorage.setItem(
+    'super-card-draft',
+    JSON.stringify({ nickname: nickname.value.trim(), avatar: avatar.value }),
+  )
   setTimeout(() => {
     loading.value = false
-    router.replace('/success')
-  }, 800)
+    router.push({ path: '/fill', query: route.query })
+  }, 400)
 }
 </script>
 

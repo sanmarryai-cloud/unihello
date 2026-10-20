@@ -1,201 +1,105 @@
 <template>
   <div class="page my-card">
     <div class="mp-chrome">
-      <button class="back" @click="$router.push('/')">‹</button>
+      <button class="back" type="button" @click="$router.push('/')">‹</button>
       <span class="mp-title">我的名片</span>
       <div class="spacer" />
     </div>
 
-    <div class="banner stub-banner" />
-
-    <div class="profile-card" v-if="profile">
-      <div class="profile-top">
-        <img :src="profile.avatar" class="big-av" alt="" />
-        <div class="info">
-          <h1 class="name">{{ profile.nickname }}</h1>
-          <p class="phone stub">点击填写手机号</p>
+    <template v-if="card">
+      <div class="banner stub-banner" />
+      <div class="profile-card">
+        <div class="profile-top">
+          <img :src="card.avatar" class="big-av" alt="" />
+          <div class="info">
+            <h1 class="name">{{ card.name }}</h1>
+            <p class="phone">{{ card.phone || '未留手机' }}</p>
+          </div>
         </div>
-        <button class="btn-contact" @click="toast('编辑名片（演示）')">编辑</button>
+        <div class="city">来自 {{ parent?.name || '直接访问' }} · scene {{ card.scene || 'direct' }}</div>
       </div>
-      <div class="profile-meta">
-        <span class="company">待完善公司信息</span>
-      </div>
-      <div class="city">📍 待设置城市</div>
-    </div>
 
-    <div class="stub-box">
-      <p class="stub-title">名片内容（演示占位）</p>
-      <ul>
-        <li>可添加资源分类与素材</li>
-        <li>可上传封面图、产品介绍</li>
-        <li>分享后他人可回递名片</li>
-      </ul>
-      <p class="hint">真实产品会对接微信开放能力与后端存储</p>
-    </div>
+      <section class="form">
+        <label class="field"><span>姓名</span><input v-model="form.name" class="input" /></label>
+        <label class="field"><span>手机</span><input v-model="form.phone" class="input" /></label>
+        <label class="field"><span>公司</span><input v-model="form.company" class="input" placeholder="选填" /></label>
+        <label class="field"><span>城市</span><input v-model="form.city" class="input" placeholder="选填" /></label>
+        <button class="btn-navy full" type="button" @click="save">保存</button>
+        <button class="btn-outline" type="button" @click="share">分享我的名片</button>
+        <button class="btn-outline" type="button" @click="preview">访客看到的页面</button>
+      </section>
+      <p v-if="saved" class="hint">已保存到本机。</p>
+    </template>
 
-    <div class="actions">
-      <button class="btn-navy full" @click="$router.push('/')">查看对方名片</button>
-      <button class="btn-outline" @click="reset">重新授权创建</button>
+    <div v-else class="form">
+      <p class="hint">你还没有自己的名片。</p>
+      <button class="btn-navy full" type="button" @click="$router.push({ path: '/auth', query: { card: 'card_main', scene: 'home', from: 'card_main' } })">
+        立即回递并创建
+      </button>
     </div>
-
-    <div v-if="toastMsg" class="toast">{{ toastMsg }}</div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { computed, reactive, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { getCard, myCard, updateCard } from '../services/api.js'
 
+const route = useRoute()
 const router = useRouter()
-const profile = ref(null)
-const toastMsg = ref('')
-let t = null
+const saved = ref(false)
+const form = reactive({ name: '', phone: '', company: '', city: '' })
 
-onMounted(() => {
-  const raw = localStorage.getItem('super-card-profile')
-  if (!raw) {
-    router.replace('/auth')
-    return
-  }
-  profile.value = JSON.parse(raw)
-})
+const card = computed(() => getCard(String(route.query.card || '')) || myCard())
+const parent = computed(() => (card.value?.parentCardId ? getCard(card.value.parentCardId) : null))
 
-function toast(msg) {
-  toastMsg.value = msg
-  clearTimeout(t)
-  t = setTimeout(() => (toastMsg.value = ''), 1600)
+watch(
+  card,
+  (value) => {
+    if (!value) return
+    form.name = value.name || ''
+    form.phone = value.phone || ''
+    form.company = value.company || ''
+    form.city = value.city || ''
+  },
+  { immediate: true },
+)
+
+function save() {
+  if (!card.value) return
+  updateCard(card.value.id, { ...form })
+  saved.value = true
 }
-
-function reset() {
-  localStorage.removeItem('super-card-profile')
-  router.replace('/auth')
+function share() {
+  router.push({ path: '/share', query: { card: card.value.id, scene: card.value.scene || 'share' } })
+}
+function preview() {
+  router.push({ path: '/', query: { card: card.value.id, scene: card.value.scene || 'share', from: card.value.parentCardId || card.value.id } })
 }
 </script>
 
 <style scoped>
-.my-card {
-  background: var(--bg);
-  min-height: 100%;
-  padding-bottom: 40px;
-}
+.my-card { background: var(--bg); min-height: 100%; padding-bottom: 28px; }
 .mp-chrome {
-  display: flex;
-  align-items: center;
-  padding: 12px 8px;
-  background: #fff;
-  border-bottom: 1px solid #f0f0f0;
-  position: sticky;
-  top: 0;
-  z-index: 10;
+  display: flex; align-items: center; padding: 12px 8px; background: #fff;
+  border-bottom: 1px solid #f0f0f0; position: sticky; top: 0; z-index: 10;
 }
-.back {
-  font-size: 28px;
-  width: 36px;
-  color: #333;
-}
-.mp-title {
-  flex: 1;
-  text-align: center;
-  font-size: 16px;
-  font-weight: 500;
-}
-.spacer {
-  width: 36px;
-}
-
-.stub-banner {
-  height: 140px;
-  background: linear-gradient(135deg, #1a3a6b 0%, #4a7fd4 50%, #e8a87c 100%);
-}
+.back { font-size: 28px; width: 36px; color: #333; }
+.mp-title { flex: 1; text-align: center; font-size: 16px; font-weight: 500; }
+.spacer { width: 36px; }
+.stub-banner { height: 120px; background: linear-gradient(135deg, #1a3a6b, #4a7fd4 55%, #e8a87c); }
 .profile-card {
-  margin: -40px 12px 0;
-  background: #fff;
-  border-radius: 14px;
-  padding: 16px;
-  position: relative;
-  z-index: 5;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  margin: -36px 12px 0; background: #fff; border-radius: 14px; padding: 16px; position: relative; z-index: 2;
 }
-.profile-top {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-}
-.big-av {
-  width: 56px;
-  height: 56px;
-  border-radius: 10px;
-  background: #eee;
-}
-.info {
-  flex: 1;
-  min-width: 0;
-}
-.name {
-  font-size: 18px;
-  font-weight: 700;
-}
-.phone.stub {
-  margin-top: 6px;
-  font-size: 14px;
-  color: #bbb;
-}
-.btn-contact {
-  background: var(--navy);
-  color: #fff;
-  border-radius: 20px;
-  padding: 8px 14px;
-  font-size: 13px;
-  flex-shrink: 0;
-}
-.profile-meta {
-  margin-top: 12px;
-  font-size: 13px;
-  color: #888;
-}
-.city {
-  margin-top: 8px;
-  font-size: 13px;
-  color: #666;
-}
-
-.stub-box {
-  margin: 16px 12px;
-  background: #fff;
-  border-radius: 12px;
-  padding: 16px;
-}
-.stub-title {
-  font-size: 15px;
-  font-weight: 600;
-  margin-bottom: 10px;
-  color: var(--navy);
-}
-ul {
-  padding-left: 18px;
-  font-size: 13px;
-  color: #555;
-  line-height: 1.8;
-}
-.hint {
-  margin-top: 12px;
-  font-size: 11px;
-  color: #bbb;
-}
-
-.actions {
-  padding: 8px 24px 24px;
-}
-.full {
-  width: 100%;
-  margin-bottom: 12px;
-}
+.profile-top { display: flex; gap: 12px; align-items: center; }
+.big-av { width: 56px; height: 56px; border-radius: 10px; background: #eee; }
+.name { font-size: 18px; font-weight: 700; }
+.phone { margin-top: 4px; color: var(--blue-text); font-size: 14px; }
+.city { margin-top: 10px; font-size: 12px; color: #888; }
+.form { padding: 16px 12px; }
+.full { width: 100%; margin-bottom: 10px; }
 .btn-outline {
-  width: 100%;
-  height: 44px;
-  border: 1px solid #ddd;
-  border-radius: 24px;
-  color: #666;
-  font-size: 14px;
+  width: 100%; height: 42px; border: 1px solid #ddd; border-radius: 22px; color: #555; margin-bottom: 10px;
 }
+.hint { text-align: center; color: #888; font-size: 12px; padding: 0 16px 16px; }
 </style>
