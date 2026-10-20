@@ -7,6 +7,7 @@ on:
   workflow_dispatch:
 
 permissions:
+  actions: read
   contents: read
   pages: write
   id-token: write
@@ -49,6 +50,34 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      # Pages is still "Deploy from a branch" (the token cannot switch it).
+      # That publisher uploads the raw repo and replaces dist if it finishes
+      # later. Wait for it, then publish the built site.
+      - name: Wait for the branch Pages publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -u
+          sha="${{ github.sha }}"
+          for i in $(seq 1 36); do
+            json=$(gh run list --repo "${{ github.repository }}" --limit 20 \
+              --json workflowName,headSha,status)
+            status=$(printf '%s' "$json" | jq -r --arg sha "$sha" '
+              [ .[] | select(.workflowName == "pages-build-deployment" and .headSha == $sha) ][0].status // "missing"
+            ')
+            echo "branch pages status: $status (try $i)"
+            if [ "$status" = "completed" ]; then
+              sleep 8
+              exit 0
+            fi
+            if [ "$status" = "missing" ] && [ "$i" -ge 6 ]; then
+              echo "No branch Pages run for this commit."
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Timed out waiting for the branch Pages run."
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
