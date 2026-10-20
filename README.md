@@ -41,9 +41,11 @@ npm run preview  # 预览构建结果
 
 推送到 `main` 会触发 [`.github/workflows/pages.yml`](.github/workflows/pages.yml)：`npm ci` → `npm run build` → 将 `dist/` 作为 Pages artifact 部署。
 
-仓库 Pages 来源需为 **GitHub Actions**（`build_type: workflow`）。公开地址：
+公开地址：<https://sanmarryai-cloud.github.io/unihello/>
 
-<https://sanmarryai-cloud.github.io/unihello/>
+**Pages 来源必须是 GitHub Actions**（`build_type: workflow`），不要用 “Deploy from a branch”。分支发布会把未经构建的源码盖到站点上，手机打开后脚本无法运行。
+
+仓库 Settings → Pages → Build and deployment → Source 选 **GitHub Actions**。工作流里会用 `GITHUB_TOKEN` 尝试调用 Pages API 切换；若 token 没有 `pages: write` / `administration: write`，需要在网页上手动改一次。改完之后，只有 Actions 会更新站点。
 
 ## 目录结构
 

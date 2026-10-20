@@ -19,6 +19,15 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Set Pages source to GitHub Actions
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api --method PUT "repos/${{ github.repository }}/pages" \
+            -H "Accept: application/vnd.github+json" \
+            -f build_type=workflow
+
       - name: Checkout
         uses: actions/checkout@v4
 
