@@ -1,6 +1,6 @@
 # 超级名片 · H5 演示
 
-微信风格数字名片（超级名片 / HeyBoss 类）可运行 Demo。技术栈：**Vite + Vue 3 + Vue Router**，纯前端 Mock，无后端、无真实微信 API。
+微信风格数字名片演示。技术栈：**Vite + Vue 3 + Vue Router**，纯前端 Mock，无后端、无真实微信 API。资料与公司名均为虚构。
 
 手机打开：<https://sanmarryai-cloud.github.io/unihello/>
 
@@ -33,7 +33,7 @@ npm run preview  # 预览构建结果
 
 ## 交互说明
 
-1. 主页切换 Tab（AI获客 / 项目介绍 / 产品介绍 / 私域课程 / 睡眠 / 高血压）查看不同资源列表（视频 / 图文 / 音频 Mock）。
+1. 主页切换 Tab（获客 / 项目介绍 / 产品介绍 / 私域课程 / 睡眠 / 高血压）查看不同资源列表（视频 / 图文 / 音频 Mock）。
 2. 点击 **立即回递** → 授权页选头像、填昵称 → **同意授权并回递名片** → 成功页 → **打开我的名片**。
 3. 资料存于 `localStorage`（键 `super-card-profile`），刷新后仍可进入「我的名片」。
 

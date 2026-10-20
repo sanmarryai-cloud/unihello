@@ -30,7 +30,7 @@
         </button>
       </div>
       <p v-if="showCompany" class="company-extra">
-        专注 AI 私域获客与内容增长，服务中小企业数字化转型。
+        演示名片，公司与资料均为虚构。
       </p>
       <div class="city">
         <span class="pin">📍</span> {{ owner.city }}
