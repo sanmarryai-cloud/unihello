@@ -32,7 +32,7 @@ function hydrate(data) {
   const lists = [
     'notices', 'threads', 'messages', 'campaigns', 'claims', 'teams', 'teamMembers',
     'contacts', 'posts', 'products', 'cases', 'embeds', 'imports', 'points',
-    'groupBuys', 'liveLinks', 'stores',
+    'groupBuys', 'liveLinks', 'stores', 'meetings', 'cloudFiles', 'tickets',
   ]
   for (const key of lists) {
     if (!Array.isArray(data[key])) data[key] = seed[key]
@@ -40,10 +40,16 @@ function hydrate(data) {
   if (!data.voice || typeof data.voice !== 'object') data.voice = seed.voice
   if (!data.modules) data.modules = { ...seed.modules }
   if (!data.meta) data.meta = { ...seed.meta }
+  else {
+    if (data.meta.safety === undefined) data.meta.safety = true
+    if (!data.meta.costRtc) data.meta.costRtc = 'agora'
+    if (!data.meta.asrVendor) data.meta.asrVendor = 'volc'
+  }
   for (const card of data.cards) {
     for (const [key, value] of Object.entries(CARD_DEFAULTS)) {
       if (card[key] === undefined) card[key] = value
     }
+    if (card.meetingsAddon === undefined) card.meetingsAddon = card.id === 'card_main'
   }
   for (const visit of data.visits || []) {
     if (!visit.source) visit.source = sourceFromScene(visit.scene)
@@ -384,6 +390,7 @@ export function createReturnCard({ parentCardId, scene, name, phone, avatar }) {
       parentCardId: parent.id,
       scene: scene || 'return',
       templateId: 'navy',
+      meetingsAddon: false,
       createdAt: Date.now(),
     }
     store.cards.push(card)

@@ -22,6 +22,7 @@
       <router-link to="/admin/site">官网</router-link>
       <router-link to="/admin/identities">身份</router-link>
       <router-link to="/admin/imports">素材</router-link>
+      <router-link to="/admin/meetings">{{ meetingsOn ? '会议' : '会议·未开通' }}</router-link>
       <router-link :to="{ path: '/poster', query: { card: cardId } }">海报</router-link>
     </nav>
     <router-view />
@@ -30,12 +31,14 @@
 
 <script setup>
 import { computed } from 'vue'
-import { adminCardId, dbState } from '../../services/api.js'
+import { adminCardId, dbState, meetingsEnabled } from '../../services/api.js'
 
 const cardId = computed(() => {
   dbState.meta && dbState.meta.adminCardId
+  dbState.cards.length
   return adminCardId()
 })
+const meetingsOn = computed(() => meetingsEnabled(cardId.value))
 </script>
 
 <style scoped>

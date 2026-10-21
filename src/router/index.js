@@ -7,6 +7,10 @@ import MyCard from '../views/MyCard.vue'
 import Share from '../views/Share.vue'
 import Poster from '../views/Poster.vue'
 import Site from '../views/Site.vue'
+import MeetingPlay from '../views/MeetingPlay.vue'
+import MeetingRoom from '../views/MeetingRoom.vue'
+import MeetingShare from '../views/MeetingShare.vue'
+import CloudDrive from '../views/CloudDrive.vue'
 import AdminShell from '../views/admin/AdminShell.vue'
 import Dashboard from '../views/admin/Dashboard.vue'
 import ProfileEdit from '../views/admin/ProfileEdit.vue'
@@ -24,6 +28,7 @@ import Reports from '../views/admin/Reports.vue'
 import SiteEditor from '../views/admin/SiteEditor.vue'
 import Identities from '../views/admin/Identities.vue'
 import Imports from '../views/admin/Imports.vue'
+import MeetingsAdmin from '../views/admin/Meetings.vue'
 import PlatformShell from '../views/platform/PlatformShell.vue'
 import Overview from '../views/platform/Overview.vue'
 import Users from '../views/platform/Users.vue'
@@ -46,6 +51,10 @@ const routes = [
   { path: '/share', name: 'share', component: Share, meta: { title: '分享名片' } },
   { path: '/poster', name: 'poster', component: Poster, meta: { title: '名片海报' } },
   { path: '/site', name: 'site', component: Site, meta: { title: '微官网' } },
+  { path: '/cloud', name: 'cloud', component: CloudDrive, meta: { title: '云盘' } },
+  { path: '/meeting/:id/live', name: 'meeting-live', component: MeetingRoom, meta: { title: '会议中' } },
+  { path: '/meeting/:id/share', name: 'meeting-share', component: MeetingShare, meta: { title: '分享会议' } },
+  { path: '/meeting/:id', name: 'meeting', component: MeetingPlay, meta: { title: '会议回放' } },
   {
     path: '/admin',
     component: AdminShell,
@@ -66,6 +75,7 @@ const routes = [
       { path: 'site', name: 'admin-site', component: SiteEditor, meta: { title: '微官网编辑' } },
       { path: 'identities', name: 'admin-identities', component: Identities, meta: { title: '多名片' } },
       { path: 'imports', name: 'admin-imports', component: Imports, meta: { title: '外链素材' } },
+      { path: 'meetings', name: 'admin-meetings', component: MeetingsAdmin, meta: { title: '会议录制' } },
     ],
   },
   {

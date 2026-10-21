@@ -275,6 +275,7 @@ export function mintMemberCard(name, phone) {
     parentCardId: boss.id,
     likeCount: 0,
     templateId: team.templateId || boss.templateId,
+    meetingsAddon: false,
     createdAt: Date.now(),
   })
   for (const tab of store.tabs.filter((item) => item.cardId === boss.id)) {
@@ -431,6 +432,7 @@ export function createIdentity(name) {
     likeCount: 0,
     parentCardId: '',
     verifiedCompany: false,
+    meetingsAddon: false,
     createdAt: Date.now(),
   }
   store.cards.push(card)

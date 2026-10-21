@@ -14,6 +14,10 @@
  * GET /platform/users
  * GET /platform/referrals
  * GET /platform/audit
+ * POST /meetings
+ * POST /meetings/:id/join
+ * POST /meetings/:id/end
+ * GET /meetings/:id
  */
 export const DATA_SOURCE = import.meta.env.VITE_API_BASE ? 'http' : 'local'
 
@@ -115,3 +119,39 @@ export {
   visitorInsights,
   visitorThread,
 } from './features.js'
+export {
+  AI_DISCLAIMER,
+  canViewMeeting,
+  closeRoom,
+  createMeeting,
+  createTicket,
+  deleteCloud,
+  deleteMeeting,
+  endMeeting,
+  findMeeting,
+  formatClock,
+  formatWhen,
+  getMeeting,
+  joinMeeting,
+  kickMember,
+  leaveMeeting,
+  listCloud,
+  listMeetings,
+  listTickets,
+  MEETING_FEATURES,
+  MEETING_PLAN,
+  meetingsEnabled,
+  muteAll,
+  providerConfig,
+  renameCloud,
+  renameSpeaker,
+  saveToCloud,
+  setMeetingsAddon,
+  setParticipantCamera,
+  setParticipantMic,
+  setProviderConfig,
+  setShareAccess,
+  setTicketStatus,
+  sharePayload,
+  usageReport,
+} from './meetings.js'

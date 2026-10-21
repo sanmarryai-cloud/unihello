@@ -1,3 +1,4 @@
+import { buildReadyMeeting } from './meetingSample.js'
 import { SAMPLE_MP4 } from '../services/media.js'
 
 const hour = 60 * 60 * 1000
@@ -458,9 +459,60 @@ export function createSeed() {
     { id: 'store1', name: '演示城市旗舰店', address: '演示路 1 号', phone: '13800000000' },
   ]
 
+  for (const card of cards) {
+    if (card.meetingsAddon === undefined) card.meetingsAddon = card.id === 'card_main'
+  }
+
+  const meetings = [
+    buildReadyMeeting({
+      id: 'm_audio',
+      code: '882610',
+      title: '超级名片经营例会',
+      type: 'audio',
+      recordMode: 'audio',
+      cardId: 'card_main',
+      startAt: now - 3 * hour,
+    }),
+    buildReadyMeeting({
+      id: 'm_video',
+      code: '882611',
+      title: '门店与供应链碰头',
+      type: 'av',
+      recordMode: 'mix',
+      cardId: 'card_main',
+      startAt: now - 26 * hour,
+    }),
+  ]
+  const cloudFiles = [
+    {
+      id: 'cloud1',
+      meetingId: 'm_audio',
+      cardId: 'card_main',
+      title: '超级名片经营例会',
+      kind: 'mp3',
+      mediaUrl: meetings[0].mediaUrl,
+      durationSec: meetings[0].durationSec,
+      savedAt: now - 2 * hour,
+    },
+  ]
+  const tickets = [
+    {
+      id: 'ticket1',
+      meetingId: 'm_audio',
+      meetingTitle: '超级名片经营例会',
+      reason: '演示工单',
+      reporterId: 'user_lin',
+      reporterName: '林晓',
+      status: 'open',
+      actionNote: '',
+      alert: '已回调业务后端（演示）',
+      createdAt: now - hour,
+    },
+  ]
+
   return {
     version: 2,
-    meta: { adminCardId: 'card_main', subscribe: false },
+    meta: { adminCardId: 'card_main', subscribe: false, safety: true, costRtc: 'agora', asrVendor: 'volc' },
     modules: { points: true, commission: true, groupBuy: true, live: true, stores: true },
     users,
     cards,
@@ -488,5 +540,8 @@ export function createSeed() {
     groupBuys,
     liveLinks,
     stores,
+    meetings,
+    cloudFiles,
+    tickets,
   }
 }

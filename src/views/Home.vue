@@ -59,6 +59,24 @@
 
       <VisitorExtras :card="card" />
 
+      <section v-if="meetingsOn" class="meeting-entry">
+        <div class="meeting-head"><b>会议录制</b></div>
+        <button
+          v-for="item in meetingRows"
+          :key="item.id"
+          type="button"
+          class="meeting-row"
+          @click="$router.push(`/meeting/${item.id}`)"
+        >
+          <span class="play-dot">▶</span>
+          <span>
+            <strong>会议录制：{{ item.title }}</strong>
+            <em>{{ item.type === 'av' ? '音视频' : '纯音频' }} · {{ item.code }}</em>
+          </span>
+        </button>
+        <p v-if="!meetingRows.length" class="meeting-empty">还没有可回放的会议。</p>
+      </section>
+
       <div class="comment-preview" @click="commentOpen = true">
         <template v-if="preview">
           <img :src="preview.avatar" class="c-avatar" alt="" />
@@ -174,8 +192,10 @@ import {
   getCard,
   likeCount,
   likedByMe,
+  listMeetings,
   listTabs,
   listVideos,
+  meetingsEnabled,
   recordOpen,
   toggleLike,
   TYPE_LABEL as typeLabel,
@@ -229,6 +249,15 @@ const returnFaces = computed(() =>
   card.value ? childCards(card.value.id).slice(0, 3).map((item) => item.avatar) : [],
 )
 const shareScene = computed(() => (scene.value === 'direct' ? card.value?.scene || 'home' : scene.value))
+const meetingsOn = computed(() => {
+  dbState.cards.length
+  return card.value ? meetingsEnabled(card.value.id) : false
+})
+const meetingRows = computed(() => {
+  dbState.meetings?.length
+  if (!card.value || !meetingsOn.value) return []
+  return listMeetings(card.value.id).filter((item) => item.status === 'ready')
+})
 
 watch(
   tabs,
@@ -473,6 +502,35 @@ function openShare() {
 .c-text { color: #333; }
 .c-thumb { font-size: 12px; color: #888; flex-shrink: 0; }
 .c-empty { font-size: 12px; color: #999; }
+.meeting-entry { margin: 12px 12px 0; }
+.meeting-head { font-size: 15px; margin-bottom: 8px; color: var(--navy); }
+.meeting-row {
+  width: 100%;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  text-align: left;
+  background: #fff;
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+.play-dot {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #1a4f9c;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 12px;
+  padding-left: 2px;
+}
+.meeting-row strong { display: block; font-size: 14px; }
+.meeting-row em { display: block; margin-top: 2px; font-style: normal; font-size: 12px; color: #888; }
+.meeting-empty { font-size: 12px; color: #888; }
 .tabs-wrap {
   position: sticky;
   top: 0;
